@@ -26,8 +26,11 @@ public class FlashScreen extends AppCompatActivity {
     private static Camera cam ;
     private static int i = 1;
     private ImageView imageView;
+    private CameraCaptureSession mSession;
+
     private CameraManager mCameraManager;
     private String mCameraId;
+    private CaptureRequest.Builder mBuilder;
     private RelativeLayout ll;
     // private CameraSupport cameraSupport;
 
@@ -67,7 +70,7 @@ public class FlashScreen extends AppCompatActivity {
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             cam = Camera.open();
-            ll.setOnClickListener(new View.OnClickListener() {
+            imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (i == 1) {
@@ -77,11 +80,14 @@ public class FlashScreen extends AppCompatActivity {
                         cam.startPreview();
                         i = 2;
                         imageView.setImageResource(R.drawable.light_on);
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                     } else {
                         cam.stopPreview();
                         cam.release();
                         i = 1;
                         imageView.setImageResource(R.drawable.light_off);
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
                     }
 
                 }
@@ -100,7 +106,7 @@ public class FlashScreen extends AppCompatActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        ll.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -123,13 +129,47 @@ public class FlashScreen extends AppCompatActivity {
             }
         });
     }
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    class MyCameraCaptureSessionStateCallback extends CameraCaptureSession.StateCallback
+    {
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onConfigured(CameraCaptureSession session)
+        {
+            mSession = session;
+            try
+            {
+                mSession.setRepeatingRequest(mBuilder.build(), null, null);
+            }
+            catch (CameraAccessException e)
+            {
+                e.printStackTrace();
+            }
+        }
 
+        @Override
+        public void onConfigureFailed(CameraCaptureSession session)
+        {
+
+        }
+    }
     public void turnOnFlashLight() {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mCameraManager.setTorchMode(mCameraId, true);
                 imageView.setImageResource(R.drawable.light_on);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+            }
+            else{
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
+                    mSession.setRepeatingRequest(mBuilder.build(), null, null);
+
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,9 +183,18 @@ public class FlashScreen extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mCameraManager.setTorchMode(mCameraId, false);
                 imageView.setImageResource(R.drawable.light_off);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
 
             }
+            else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
+                    mBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
+                    mSession.setRepeatingRequest(mBuilder.build(), null, null);
+
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

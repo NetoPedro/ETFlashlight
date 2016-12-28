@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/adView"
         android:src="@drawable/light_off"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
         android:adjustViewBounds="true"
         android:id="@+id/imageView" />
 

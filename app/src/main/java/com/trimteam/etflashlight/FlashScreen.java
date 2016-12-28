@@ -15,6 +15,12 @@ import android.hardware.Camera;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 @SuppressWarnings("deprecation")
 public class FlashScreen extends AppCompatActivity {
     private static Camera cam ;
@@ -22,14 +28,18 @@ public class FlashScreen extends AppCompatActivity {
     private ImageView imageView;
     private CameraManager mCameraManager;
     private String mCameraId;
-    private LinearLayout ll;
+    private RelativeLayout ll;
     // private CameraSupport cameraSupport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flash_screen);
-        ll = (LinearLayout) findViewById(R.id.activityTouch);
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3410114126236036~5068724706");
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        ll = (RelativeLayout) findViewById(R.id.activityTouch);
         /* {
             cameraSupport=new CameraNew(this);
         } else {

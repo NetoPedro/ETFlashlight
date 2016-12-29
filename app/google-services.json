@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "724586843721",
+    "project_id": "et-flashlight"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:724586843721:android:403002d2db495f0b",
+        "android_client_info": {
+          "package_name": "com.trimteam.etflashlight"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH5M97oNCZTgSrp39lZWbBNxOyUEBL_vo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-89555124-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

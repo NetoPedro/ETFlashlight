@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera.Parameters;
 
 import android.os.Build;
@@ -21,13 +22,15 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import java.io.IOException;
+
 @SuppressWarnings("deprecation")
 public class FlashScreen extends AppCompatActivity {
     private static Camera cam ;
     private static int i = 1;
     private ImageView imageView;
     private CameraCaptureSession mSession;
-
+    private SurfaceTexture mPreviewTexture;
     private CameraManager mCameraManager;
     private String mCameraId;
     private CaptureRequest.Builder mBuilder;
@@ -74,19 +77,21 @@ public class FlashScreen extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (i == 1) {
+                        imageView.setImageResource(R.drawable.light_on);
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                         Parameters p = cam.getParameters();
                         p.setFlashMode(Parameters.FLASH_MODE_TORCH);
                         cam.setParameters(p);
                         cam.startPreview();
                         i = 2;
-                        imageView.setImageResource(R.drawable.light_on);
-                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
                     } else {
+                        imageView.setImageResource(R.drawable.light_off);
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                         cam.stopPreview();
                         cam.release();
                         i = 1;
-                        imageView.setImageResource(R.drawable.light_off);
-                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
 
                     }
 
@@ -157,16 +162,29 @@ public class FlashScreen extends AppCompatActivity {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mCameraManager.setTorchMode(mCameraId, true);
                 imageView.setImageResource(R.drawable.light_on);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                mCameraManager.setTorchMode(mCameraId, true);
+
 
             }
             else{
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
-                    mSession.setRepeatingRequest(mBuilder.build(), null, null);
+                    imageView.setImageResource(R.drawable.light_on);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    cam = Camera.open();
+                    Camera.Parameters p = cam.getParameters();
+                    p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                    cam.setParameters(p);
+                    mPreviewTexture = new SurfaceTexture(0);
+                    try {
+                        cam.setPreviewTexture(mPreviewTexture);
+                    } catch (IOException ex) {
+                        // Ignore
+                    }
+                    cam.startPreview();
+
 
                 }
 
@@ -181,17 +199,19 @@ public class FlashScreen extends AppCompatActivity {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mCameraManager.setTorchMode(mCameraId, false);
                 imageView.setImageResource(R.drawable.light_off);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                mCameraManager.setTorchMode(mCameraId, false);
+
 
 
             }
             else{
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-                    mBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
-                    mSession.setRepeatingRequest(mBuilder.build(), null, null);
+                    imageView.setImageResource(R.drawable.light_off);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    cam.stopPreview();
+                    cam.release();
 
                 }
             }
